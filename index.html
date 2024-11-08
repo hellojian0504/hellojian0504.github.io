@@ -1,12 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Portfolio</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>사과는 빨간색이 아니다</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <p>Hello, World!</p>
+  <header>
+    <h1>사과는 빨간색이 아니다</h1>
+    <p>사과의 색에 관한 새로운 시각을 제공합니다.</p>
+  </header>
+
+  <section id="apple-analysis">
+    <h2>사과 한 알 (RGB 분석)</h2>
+    <p>사과의 표면에서 다양한 색을 탐색해보세요.</p>
+    <div id="apple-image-container">
+      <img id="apple-image" src="apple.jpg" alt="사과 이미지">
+      <div id="rgb-display"></div>
+    </div>
+  </section>
+
+  <section id="light-effect">
+    <h2>빛과 사과</h2>
+    <p>사과의 색은 조명에 따라 달라집니다.</p>
+    <button onclick="changeLight('white')">백색광</button>
+    <button onclick="changeLight('blue')">청색광</button>
+    <button onclick="changeLight('red')">적색광</button>
+    <div id="light-display"></div>
+  </section>
+
+  <section id="growth-process">
+    <h2>사과는 변한다 (성장 과정)</h2>
+    <p>사과의 성장 단계별로 색이 어떻게 변하는지 확인해보세요.</p>
+    <div id="growth-stages">
+      <img src="apple_growth1.jpg" alt="초기 단계 사과">
+      <img src="apple_growth2.jpg" alt="중간 단계 사과">
+      <img src="apple_growth3.jpg" alt="완숙 단계 사과">
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2024, 사과 색 분석 프로젝트</p>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
