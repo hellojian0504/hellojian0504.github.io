@@ -1,34 +1,29 @@
-// 사과 한 알의 색깔: 이미지 색상 추출
-document.querySelectorAll('.apple-gallery img').forEach(img => {
-  img.addEventListener('mousemove', e => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = img.width;
-    canvas.height = img.height;
-    ctx.drawImage(img, 0, 0);
+// 사과 한 알의 색깔: 한 사진에서 특정 지점의 색상 추출
+const appleImage = document.getElementById('single-apple');
+const colorInfo = document.getElementById('color-info');
+const rgbValue = document.getElementById('rgb-value');
+const colorCircle = document.querySelector('.color-circle');
 
-    const x = e.offsetX;
-    const y = e.offsetY;
-    const pixel = ctx.getImageData(x, y, 1, 1).data;
-    const rgb = `RGB(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+// 사과 사진의 특정 지점 색상 가져오기
+appleImage.addEventListener('mousemove', e => {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = appleImage.width;
+  canvas.height = appleImage.height;
 
-    // 가장 큰 색상 성분 표시
-    const dominantColor = ['Red', 'Green', 'Blue'][[pixel[0], pixel[1], pixel[2]].indexOf(Math.max(...pixel))];
+  // 이미지를 캔버스에 그리기
+  ctx.drawImage(appleImage, 0, 0);
 
-    document.getElementById('rgb-value').textContent = `${rgb} (${dominantColor})`;
-    document.querySelector('.color-circle').style.backgroundColor = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
-  });
-});
+  // 커서 위치에서의 색상 데이터 가져오기
+  const rect = appleImage.getBoundingClientRect();
+  const x = e.clientX - rect.left; // 커서의 X 좌표
+  const y = e.clientY - rect.top;  // 커서의 Y 좌표
+  const pixel = ctx.getImageData(x, y, 1, 1).data;
 
-// 사과와 빛: 조명 색상 조절
-document.querySelectorAll('input[type="range"]').forEach(slider => {
-  slider.addEventListener('input', () => {
-    const r = document.getElementById('red').value;
-    const g = document.getElementById('green').value;
-    const b = document.getElementById('blue').value;
+  // RGB 값 표시
+  const rgb = `RGB(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+  rgbValue.textContent = rgb;
 
-    document.getElementById('apple').style.filter = 
-      `brightness(1.2) sepia(1) saturate(1.5) hue-rotate(${r}deg)`;
-    document.getElementById('apple').style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-  });
+  // 색상 원형 표시
+  colorCircle.style.backgroundColor = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
 });
