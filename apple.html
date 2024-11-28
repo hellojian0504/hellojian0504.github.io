@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>사과는 빨간색이 아니다</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    #apple-container {
+      margin: 50px auto;
+      width: 300px;
+      height: 300px;
+      position: relative;
+      overflow: hidden;
+    }
+    #background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background-color: white;
+      transition: background-color 0.5s;
+    }
+    #apple {
+      position: relative;
+      width: 180px;
+      height: 200px;
+      background-color: red;
+      border-radius: 50% 50% 45% 45%;
+      margin: 40px auto 0;
+      box-shadow: inset -10px 10px 30px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.5s;
+    }
+    #apple:before {
+      content: '';
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      width: 20px;
+      height: 60px;
+      background-color: brown;
+      border-radius: 10px;
+      transform: translateX(-50%);
+    }
+    #apple:after {
+      content: '';
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      width: 60px;
+      height: 30px;
+      background-color: green;
+      border-radius: 30px 30% 0 0;
+      transform: translateX(-50%) rotate(-20deg);
+    }
+    .slider-container {
+      margin: 20px 0;
+    }
+    .slider {
+      width: 80%;
+      margin: 10px auto;
+    }
+    .label {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    .output {
+      font-size: 14px;
+      color: #555;
+    }
+    #afterimage-container {
+      margin-top: 30px;
+    }
+    .spectrum {
+      width: 100px;
+      height: 20px;
+      margin: 5px auto;
+      background-color: gray;
+      transition: background-color 0.5s;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>사과는 빨간색이 아니다</h1>
+  <p>보색 착시, 시각 수용체, 빛의 합성, 잔상을 탐구합니다.</p>
+
+  <!-- 사과와 배경 -->
+  <div id="apple-container">
+    <div id="background"></div>
+    <div id="apple"></div>
+  </div>
+
+  <!-- 배경색 RGB 조절 -->
+  <div class="slider-container">
+    <div class="label">배경색 RGB 조절</div>
+    <input type="range" id="bg-red-slider" class="slider" min="0" max="255" value="255">
+    <input type="range" id="bg-green-slider" class="slider" min="0" max="255" value="255">
+    <input type="range" id="bg-blue-slider" class="slider" min="0" max="255" value="255">
+    <div class="output">
+      Background R: <span id="bg-red-value">255</span>, 
+      G: <span id="bg-green-value">255</span>, 
+      B: <span id="bg-blue-value">255</span>
+    </div>
+  </div>
+
+  <!-- RGB 빛 조절 -->
+  <div class="slider-container">
+    <div class="label">RGB 빛 조절</div>
+    <input type="range" id="red-slider" class="slider" min="0" max="255" value="255">
+    <input type="range" id="green-slider" class="slider" min="0" max="255" value="0">
+    <input type="range" id="blue-slider" class="slider" min="0" max="255" value="0">
+    <div class="output">
+      R: <span id="red-value">255</span>, 
+      G: <span id="green-value">0</span>, 
+      B: <span id="blue-value">0</span>
+    </div>
+  </div>
+
+  <!-- 색상 잔상 착시 -->
+  <div id="afterimage-container">
+    <h3>색상 잔상 착시</h3>
+    <button id="afterimage-button">빨간색 보기</button>
+    <div id="afterimage-feedback">5초간 빨간 화면을 본 뒤 흰 화면을 보세요!</div>
+  </div>
+
+  <!-- 원뿔세포 반응 및 스펙트럼 -->
+  <div>
+    <h3>원뿔세포 반응</h3>
+    <p>
+      R 세포: <span id="cone-r">1.0</span><br>
+      G 세포: <span id="cone-g">0.0</span><br>
+      B 세포: <span id="cone-b">0.0</span>
+    </p>
+    <div>
+      <div class="spectrum" id="spectrum-r"></div>
+      <div class="spectrum" id="spectrum-g"></div>
+      <div class="spectrum" id="spectrum-b"></div>
+    </div>
+  </div>
+
+  <script>
+    // HTML 요소
+    const apple = document.getElementById("apple");
+    const background = document.getElementById("background");
+    const redSlider = document.getElementById("red-slider");
+    const greenSlider = document.getElementById("green-slider");
+    const blueSlider = document.getElementById("blue-slider");
+    const redValue = document.getElementById("red-value");
+    const greenValue = document.getElementById("green-value");
+    const blueValue = document.getElementById("blue-value");
+    const coneR = document.getElementById("cone-r");
+    const coneG = document.getElementById("cone-g");
+    const coneB = document.getElementById("cone-b");
+    const spectrumR = document.getElementById("spectrum-r");
+    const spectrumG = document.getElementById("spectrum-g");
+    const spectrumB = document.getElementById("spectrum-b");
+
+    // 사과 색상 업데이트 및 원뿔세포 반응
+    function updateAppleColor() {
+      const r = parseInt(redSlider.value);
+      const g = parseInt(greenSlider.value);
+      const b = parseInt(blueSlider.value);
+
+      // 사과 색상 업데이트
+      apple.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+      redValue.textContent = r;
+      greenValue.textContent = g;
+      blueValue.textContent = b;
+
+      // 원뿔세포 반응 (단순 비율 계산)
+      const rRatio = (r / 255).toFixed(2);
+      const gRatio = (g / 255).toFixed(2);
+      const bRatio = (b / 255).toFixed(2);
+      coneR.textContent = rRatio;
+      coneG.textContent = gRatio;
+      coneB.textContent = bRatio;
+
+      // 스펙트럼 색상 업데이트
+      spectrumR.style.backgroundColor = `rgba(255, 0, 0, ${rRatio})`;
+      spectrumG.style.backgroundColor = `rgba(0, 255, 0, ${gRatio})`;
+      spectrumB.style.backgroundColor = `rgba(0, 0, 255, ${bRatio})`;
+    }
+
+    redSlider.addEventListener("input", updateAppleColor);
+    greenSlider.addEventListener("input", updateAppleColor);
+    blueSlider.addEventListener("input", updateAppleColor);
+
+    // 배경색 RGB 조절
+    const bgRedSlider = document.getElementById("bg-red-slider");
+    const bgGreenSlider = document.getElementById("bg-green-slider");
+    const bgBlueSlider = document.getElementById("bg-blue-slider");
+    const bgRedValue = document.getElementById("bg-red-value");
+    const bgGreenValue = document.getElementById("bg-green-value");
+    const bgBlueValue = document.getElementById("bg-blue-value");
+
+    function updateBackgroundColor() {
+      const r = parseInt(bgRedSlider.value);
+      const g = parseInt(bgGreenSlider.value);
+      const b = parseInt(bgBlueSlider.value);
+
+      background.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+      bgRedValue.textContent = r;
+      bgGreenValue.textContent = g;
+      bgBlueValue.textContent = b;
+    }
+
+    bgRedSlider.addEventListener("input", updateBackgroundColor);
+    bgGreenSlider.addEventListener("input", updateBackgroundColor);
+    bgBlueSlider.addEventListener("input", updateBackgroundColor);
+
+    // 잔상 착시 효과
+    const afterimageButton = document.getElementById("afterimage-button");
+    const afterimageFeedback = document.getElementById("afterimage-feedback");
+
+    afterimageButton.addEventListener("click", function() {
+      // 배경을 청록색으로 변경
+      background.style.backgroundColor = "rgb(0, 255, 255)";
+      afterimageFeedback.style.visibility = "hidden";
+      
+      // 20초 후에 원래 배경색으로 돌아오기
+      setTimeout(() => {
+        background.style.backgroundColor = "white";
+        afterimageFeedback.style.visibility = "visible";
+      }, 20000);
+    });
+  </script>
+
+</body>
+</html>
+
